@@ -5,15 +5,15 @@ import "@canva/app-ui-kit/styles.css";
 
 const root = createRoot(document.getElementById("root") as Element);
 function render() {
-  root.render(
-    <AppUiProvider>
-      <App />
-    </AppUiProvider>
-  );
+    root.render(
+        <AppUiProvider>
+            <App />
+        </AppUiProvider>
+    );
 }
 
 render();
 
 if (module.hot) {
-  module.hot.accept("./app", render);
+    module.hot.accept("./app", render);
 }

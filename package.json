@@ -11,8 +11,8 @@
     "lint:types": "tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier '{examples,src,utils,scripts}/**/*.{css,ts,tsx,json,js}' --no-config --write",
-    "format:check": "prettier '{examples,src,utils,scripts}/**/*.{css,ts,tsx,json,js}' --no-config --check --ignore-path",
+    "format": "prettier '{src,utils,scripts}/**/*.{css,ts,tsx,json,js}' --no-config --write",
+    "format:check": "prettier '{src,utils,scripts}/**/*.{css,ts,tsx,json,js}' --no-config --check --ignore-path",
     "format:file": "prettier $1 --no-config --write",
     "test": "jest --no-cache",
     "test:watch": "jest --no-cache --watch"
@@ -21,9 +21,7 @@
   "author": "Canva Pty Ltd.",
   "license": "SEE LICENSE IN LICENSE.md",
   "private": true,
-  "workspaces": [
-    "./examples/*"
-  ],
+ 
   "dependencies": {
     "@canva/app-ui-kit": "^3.7.0",
     "@canva/asset": "^1.7.0",

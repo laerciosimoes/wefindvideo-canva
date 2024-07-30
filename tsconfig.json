@@ -14,7 +14,7 @@
     "types": ["node", "jest"],
     "composite": true,
     "declaration": true,
-    "declarationMap": true,
+    "declarationMap": false,
     "experimentalDecorators": true,
     "importHelpers": true,
     "noImplicitOverride": true,
@@ -41,7 +41,6 @@
   "include": [
     "./src/**/*",
     "./scripts/**/*",
-    "./examples/**/*",
     "./declarations/declarations.d.ts",
     "./utils/**/*",
     "./styles/**/*",
