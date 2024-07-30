@@ -1,4 +1,4 @@
-import { Button, Rows, Text } from "@canva/app-ui-kit";
+import { Button, Rows, Text, MultilineInput, CharacterCountDecorator } from "@canva/app-ui-kit";
 import { addNativeElement } from "@canva/design";
 import styles from "styles/components.css";
 
@@ -14,11 +14,16 @@ export const App = () => {
         <div className={styles.scrollContainer}>
             <Rows spacing="2u">
                 <Text>
-                    To make changes to this app, edit the <code>src/app.tsx</code> file,
-                    then close and reopen the app in the editor to preview the changes.
+                    Insert the prompt for the video generator here.
                 </Text>
+                <MultilineInput
+                    footer={<CharacterCountDecorator max={500} />}
+                    onChange={() => { }}
+                    placeholder="Your Prompt Data"
+                    value="teste"
+                />
                 <Button variant="primary" onClick={onClick} stretch>
-                    Do something cool
+                    Add Video
                 </Button>
             </Rows>
         </div>

@@ -41,7 +41,6 @@
   "include": [
     "./src/**/*",
     "./scripts/**/*",
-    "./examples/**/*",
     "./declarations/declarations.d.ts",
     "./utils/**/*",
     "./styles/**/*",
