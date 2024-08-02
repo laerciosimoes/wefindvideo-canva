@@ -1,2 +1,5 @@
 python-dotenv
-FastAPI
+langchain_openai
+langchain_core
+fastapi
+uvicorn

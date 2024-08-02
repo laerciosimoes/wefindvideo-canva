@@ -7,3 +7,7 @@ yarn-error.log
 dist
 secrets.json
 **/*/db.json
+.venv
+.env
+.mypy_cache
+

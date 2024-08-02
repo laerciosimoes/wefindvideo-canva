@@ -3,8 +3,8 @@ from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from fastapi import FastAPI
-
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
 load_dotenv()  # take environment variables from .env.
 
@@ -40,3 +40,29 @@ def getScript(typeVideo, prompt):
 
     result = chain.invoke({"typeVideo": typeVideo, "text": prompt})
     return result
+
+
+class VideoRequest(BaseModel):
+    prompt: str
+    videoType: str
+
+
+# 4. App definition
+app = FastAPI(
+    title="WeFindVideo Server",
+    version="1.0",
+    description="WeFindVideo API",
+)
+
+# 5. Adding chain route
+
+
+@app.post("/generate-video/")
+def generate_video(request: VideoRequest):
+    response = getScript(request.videoType, request.prompt)
+    return response
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
