@@ -7,6 +7,10 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 load_dotenv()  # take environment variables from .env.
+print("OPENAI_API_KEY:", os.getenv("OPENAI_API_KEY"))
+print("unsplash_ID:", os.getenv("unsplash_ID"))
+print("unsplash_Access_Key:", os.getenv("unsplash_Access_Key"))
+print("unsplash_Secret_Key:", os.getenv("unsplash_Secret_Key"))
 
 OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
 unsplash_ID = os.environ["unsplash_ID"]

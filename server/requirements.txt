@@ -1,5 +1,7 @@
-python-dotenv
-langchain_openai
-langchain_core
 fastapi
 uvicorn
+langchain-core
+langchain-openai
+python-dotenv
+pydantic
+moviepy
