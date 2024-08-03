@@ -16,5 +16,11 @@ COPY . /app
 # Expose the port your app runs on (if applicable)
 EXPOSE 8000
 
+ENV OPENAI_API_KEY=''
+ENV unsplash_ID=''
+ENV unsplash_Access_Key=''
+ENV unsplash_Secret_Key=''
+
+
 # Define the command to run the application
 CMD ["python", "app.py"]
