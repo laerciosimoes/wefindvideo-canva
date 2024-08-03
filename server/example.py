@@ -3,9 +3,11 @@ import requests
 from moviepy.editor import (
     ImageClip,
     TextClip,
+    ColorClip,
     CompositeVideoClip,
-    concatenate_videoclips,
+    concatenate_videoclips
 )
+from moviepy.video.fx.all import fadein, fadeout
 from IPython.display import Video, display
 
 # Função para baixar imagens
@@ -48,14 +50,25 @@ def create_video(json_data, scene_images, output_path="video.mp4"):
         # Baixar imagem
         download_image(image_url, image_filename)
 
-        # Criar clipe de imagem e texto
+        # Criar clipe de imagem
         img_clip = ImageClip(image_filename).set_duration(duration)
-        txt_clip = (
-            TextClip(description, fontsize=24, color="white")
-            .set_position("bottom")
-            .set_duration(duration)
-        )
-        video_clip = CompositeVideoClip([img_clip, txt_clip])
+        
+        # Criar clipe de texto
+        txt_clip = TextClip(description, fontsize=24, color="white", bg_color="black", size=(None, None))
+        txt_clip = txt_clip.set_duration(duration).set_position(("center", "bottom"))
+
+        # Ajustar o tamanho do fundo com base no texto
+        text_size = txt_clip.size
+        background_clip = ColorClip(
+            size=(text_size[0] + 20, text_size[1] + 10), 
+            color=(0, 0, 0)
+        ).set_duration(duration).set_opacity(0.5).set_position(("center", "bottom"))
+
+        # Criar o clipe final combinando imagem, fundo e texto
+        video_clip = CompositeVideoClip([img_clip, background_clip, txt_clip])
+
+        # Aplicar efeitos de fade-in e fade-out
+        video_clip = video_clip.fx(fadein, duration=1).fx(fadeout, duration=1)  # 1 segundo para fade-in e fade-out
         clips.append(video_clip)
 
         # Remover arquivo de imagem temporário
@@ -69,5 +82,5 @@ def create_video(json_data, scene_images, output_path="video.mp4"):
 video_output_path = "video.mp4"
 create_video(json_data, scene_images, video_output_path)
 
-# Exibir o vídeo no Jupyter Notebook
+# Exibir o vídeo no Jupyter Notebook (opcional)
 display(Video(video_output_path, embed=True))
