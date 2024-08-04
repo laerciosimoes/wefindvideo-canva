@@ -21,7 +21,7 @@ def FindImages(query):
         data = response.json()
 
         if "results" in data and len(data["results"]) > 0:
-            print(f"Response {query} => {data}")
+            #print(f"Response {query} => {data}")
             return data["results"][0]["urls"]["regular"]
         else:
             print(f"No results found for query: {query}")

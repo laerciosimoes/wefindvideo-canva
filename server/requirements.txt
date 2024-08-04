@@ -5,3 +5,4 @@ langchain-openai
 python-dotenv
 pydantic
 moviepy
+azure-storage-blob
