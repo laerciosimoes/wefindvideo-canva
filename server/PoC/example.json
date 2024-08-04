@@ -1,0 +1,44 @@
+[
+    {
+        "SceneNumber": 1,
+        "Title": "Gymnastics Training",
+        "Description": "Rebeca Andrade and Simone Biles are training in the gym. They're wearing their leotards and are practicing their gymnastic routines on the balance beam. They encourage each other and share tips.",
+        "Tags": [
+            "Gymnastics",
+            "Training",
+            "Rebeca Andrade",
+            "Simone Biles"
+        ],
+        "VoiceOver": "Rebeca and Simone, two of the world's top gymnasts, at the peak of their training. Their hard work and dedication shines through in every move.",
+        "Duration": 15,
+        "QueryImage": "Gymnastics training"
+    },
+    {
+        "SceneNumber": 2,
+        "Title": "Competition Day",
+        "Description": "It's the day of the competition. Rebeca and Simone are getting ready. They're wearing their country's colors and are warming up. The audience is cheering in anticipation.",
+        "Tags": [
+            "Competition",
+            "Gymnastics",
+            "Rebeca Andrade",
+            "Simone Biles"
+        ],
+        "VoiceOver": "The day of the competition has arrived. The excitement in the air is palpable as Rebeca and Simone prepare to give their best.",
+        "Duration": 15,
+        "QueryImage": "Gymnastics competition"
+    },
+    {
+        "SceneNumber": 3,
+        "Title": "Victory",
+        "Description": "Rebeca and Simone have won the competition. They're standing on the podium, medals around their necks. They're smiling and waving to the crowd. The crowd is cheering for them.",
+        "Tags": [
+            "Victory",
+            "Gymnastics",
+            "Rebeca Andrade",
+            "Simone Biles"
+        ],
+        "VoiceOver": "Rebeca and Simone, victorious, bask in their well-deserved glory. Their perseverance and hard work have paid off.",
+        "Duration": 15,
+        "QueryImage": "Gymnastics victory"
+    }
+]
