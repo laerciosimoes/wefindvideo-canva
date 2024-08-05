@@ -10,6 +10,11 @@ COPY requirements.txt /app/
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install ImageMagick
+RUN apt-get update && \
+    apt-get install -y imagemagick ffmpeg  && \
+    rm -rf /var/lib/apt/lists/*
+
 # Copy the rest of the application code to /app
 COPY . /app
 
@@ -20,7 +25,7 @@ ENV OPENAI_API_KEY=''
 ENV unsplash_ID=''
 ENV unsplash_Access_Key=''
 ENV unsplash_Secret_Key=''
-
+ENV IMAGEMAGICK_BINARY=''
 
 # Define the command to run the application
 CMD ["python", "app.py"]

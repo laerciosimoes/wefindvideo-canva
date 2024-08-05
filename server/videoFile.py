@@ -3,13 +3,7 @@ import uuid
 import os
 import uuid
 import requests
-from moviepy.editor import (
-    ImageClip,
-    TextClip,
-    ColorClip,
-    CompositeVideoClip,
-    concatenate_videoclips,
-)
+from moviepy.editor import (ImageClip,TextClip,ColorClip, CompositeVideoClip, concatenate_videoclips)
 from moviepy.video.fx.all import fadein, fadeout
 from azure.core.exceptions import ResourceExistsError, AzureError
 from azure.storage.blob import BlobServiceClient
@@ -19,9 +13,9 @@ from moviepy.config import change_settings
 load_dotenv()  # take environment variables from .env.
 
 blob_storage_connection_string = os.environ["blob_storage_connection_string"]
-IMAGEMAGICK_BINARY = os.environ["IMAGEMAGICK_BINARY"]
-
-change_settings({"IMAGEMAGICK_BINARY": IMAGEMAGICK_BINARY})
+#IMAGEMAGICK_BINARY = os.environ["IMAGEMAGICK_BINARY"]
+#if IMAGEMAGICK_BINARY:
+#    change_settings({"IMAGEMAGICK_BINARY": IMAGEMAGICK_BINARY})
 
 
 def getVideoImages(jsonData):
