@@ -3,13 +3,7 @@ import uuid
 import os
 import uuid
 import requests
-from moviepy.editor import (
-    ImageClip,
-    TextClip,
-    ColorClip,
-    CompositeVideoClip,
-    concatenate_videoclips,
-)
+from moviepy.editor import (ImageClip,TextClip,ColorClip, CompositeVideoClip, concatenate_videoclips)
 from moviepy.video.fx.all import fadein, fadeout
 from azure.core.exceptions import ResourceExistsError, AzureError
 from azure.storage.blob import BlobServiceClient
@@ -18,20 +12,26 @@ from moviepy.config import change_settings
 
 load_dotenv()  # take environment variables from .env.
 
-blob_storage_connection_string = os.environ["blob_storage_connection_string"]
-IMAGEMAGICK_BINARY = os.environ["IMAGEMAGICK_BINARY"]
+blob_storage_connection_string = os.environ.get("blob_storage_connection_string")
+IMAGEMAGICK_BINARY = os.environ.get("IMAGEMAGICK_BINARY")
 
-change_settings({"IMAGEMAGICK_BINARY": IMAGEMAGICK_BINARY})
+if not blob_storage_connection_string:
+    raise EnvironmentError(
+        "Required environment variable 'blob_storage_connection_string' is not set."
+    )
+
+if IMAGEMAGICK_BINARY:
+    change_settings({"IMAGEMAGICK_BINARY": IMAGEMAGICK_BINARY})
+
+# Set the default font to a font that is known to be available
+os.environ["MAGICK_FONT"] = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
 
 def getVideoImages(jsonData):
     imageUrls = []
     for item in jsonData:
-        # print(item)
-        imageUrls.append(queryImages.FindImages(item["QueryImage"]))
-
-    # create_video(jsonData, imageUrls, temporary_file_name)
-    # return temporary_file_name
+        #print(item)
+        imageUrls.append(queryImages.FindImages(item.get("QueryImage")))
     return imageUrls
 
 
@@ -73,9 +73,11 @@ def create_video(json_data, scene_images):
         # Criar clipe de imagem
         img_clip = ImageClip(image_filename).set_duration(duration)
 
+        #print(f"Listing Fonts {TextClip.list('font')}")
+        
         # Criar clipe de texto
         txt_clip = TextClip(
-            description, fontsize=24, color="white", bg_color="black", size=(None, None)
+            description, font='DejaVu-Sans', fontsize=24, color="white", bg_color="black", size=(None, None)
         )
         txt_clip = txt_clip.set_duration(duration).set_position(("center", "bottom"))
 
@@ -104,7 +106,7 @@ def create_video(json_data, scene_images):
     final_clip = concatenate_videoclips(clips, method="compose")
     temporary_file_name = f"video_{uuid.uuid4().hex}.mp4"
 
-    final_clip.write_videofile(temporary_file_name, fps=24)
+    final_clip.write_videofile(temporary_file_name, fps=24, codec="libx264")
     return temporary_file_name
 
 
@@ -126,48 +128,3 @@ def upload_to_blob(local_filename):
         print(f"An error occurred with Azure: {e}")
     except Exception as e:
         print(f"An unexpected error occurred: {e}")
-
-
-if __name__ == "__main__":
-    jsonData = [
-        {
-            "scene_number": 1,
-            "Title": "Opening Scene",
-            "Description": "Rebeca Andrade and Simone Biles standing at the entrance of a gymnastics stadium, getting ready for their performance. The crowd is cheering in the background.",
-            "Tags": ["gymnastics", "Rebeca Andrade", "Simone Biles"],
-            "VoiceOver": "Two of the world's most formidable gymnasts, Rebeca Andrade and Simone Biles, prepare for another breathtaking performance",
-            "Duration": 10,
-            "QueryImage": "Rebeca Andrade and Simone Biles",
-        },
-        {
-            "scene_number": 2,
-            "Title": "Rebeca's Performance",
-            "Description": "Rebeca Andrade performing her routine on the balance beam. She executes a series of intricate flips and jumps with grace and precision.",
-            "Tags": ["Rebeca Andrade", "gymnastics", "performance"],
-            "VoiceOver": "Watch as Rebeca Andrade displays her extraordinary talent on the balance beam, a combination of strength, balance, and elegance.",
-            "Duration": 15,
-            "QueryImage": "Rebeca Andrade balance beam",
-        },
-        {
-            "scene_number": 3,
-            "Title": "Simone's Performance",
-            "Description": "Simone Biles takes the floor, demonstrating her powerful and dynamic routine. She lands her signature move, 'The Biles', to the amazement of the audience.",
-            "Tags": ["Simone Biles", "gymnastics", "performance"],
-            "VoiceOver": "Witness the exceptional athleticism of Simone Biles as she performs her iconic move, 'The Biles'.",
-            "Duration": 15,
-            "QueryImage": "Simone Biles floor routine",
-        },
-        {
-            "scene_number": 4,
-            "Title": "Closing Scene",
-            "Description": "Rebeca and Simone embrace after their performances. The crowd stands, clapping and cheering, acknowledging the extraordinary talent of these two athletes.",
-            "Tags": ["Rebeca Andrade", "Simone Biles", "gymnastics"],
-            "VoiceOver": "The crowd roars in appreciation for these two remarkable athletes, Rebeca Andrade and Simone Biles, as they wrap up their performances.",
-            "Duration": 10,
-            "QueryImage": "Rebeca Andrade and Simone Biles hugging",
-        },
-    ]
-
-    imageUrls = getVideoImages(jsonData)
-    fileName = create_video(jsonData, imageUrls)
-    print(fileName)

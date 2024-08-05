@@ -1,12 +1,14 @@
 import os
 import json
+import videoFile
+
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import videoFile
+
 
 import time
 
