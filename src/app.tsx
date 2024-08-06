@@ -16,9 +16,35 @@ export const App = () => {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [analysisData, setAnalysisData] = useState<AnalysisItem[]>([]);
 
-  const handleGenerateVideo = () => {
+  const handleGenerateVideo = async () => {
     setIsLoading(true);
     // Lógica para geração de vídeo
+
+    try {
+      const response = await fetch("http://localhost:8000/generate-video/", { // Atualize o URL para o backend
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          videoType
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao gerar vídeo");
+      }
+
+      const data = await response.json();
+      setVideoUrl(data.videoUrl); // Certifique-se de que o backend retorna a URL do vídeo
+      setVideoGenerated(true);
+    } catch (error) {
+      console.error("Erro ao gerar vídeo:", error);
+    } finally {
+      setIsLoading(false);
+    }
+
     setTimeout(() => {
       setIsLoading(false);
       setVideoGenerated(true);
@@ -27,7 +53,7 @@ export const App = () => {
   };
 
   const handleAnalyzeVideo = () => {
-    // Lógica para análise do vídeo
+    // Implementar lógica de análise do vídeo aqui    
     setAnalysisData([{ item: "Exemplo 1" }, { item: "Exemplo 2" }]);
     setShowAnalysis(true);
   };
@@ -57,7 +83,7 @@ export const App = () => {
           Gerar Vídeo
         </Button>
 
-        {isLoading && <Text>Generate the Video</Text>}
+        {isLoading && <Text>Generate the Video...</Text>}
 
         {!isLoading && videoGenerated && (
           <>
