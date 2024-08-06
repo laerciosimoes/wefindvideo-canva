@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()  # take environment variables from .env.
-
 unsplash_Access_Key = os.environ["unsplash_Access_Key"]
 
 
@@ -21,7 +20,6 @@ def FindImages(query):
         data = response.json()
 
         if "results" in data and len(data["results"]) > 0:
-            #print(f"Response {query} => {data}")
             return data["results"][0]["urls"]["regular"]
         else:
             print(f"No results found for query: {query}")

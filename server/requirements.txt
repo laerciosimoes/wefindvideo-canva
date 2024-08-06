@@ -6,3 +6,4 @@ python-dotenv
 pydantic
 moviepy
 azure-storage-blob
+urllib3
