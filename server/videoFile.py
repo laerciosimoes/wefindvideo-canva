@@ -1,9 +1,16 @@
-import queryImages
+import videoImages
 import uuid
 import os
 import uuid
 import requests
-from moviepy.editor import (ImageClip,TextClip,ColorClip, CompositeVideoClip, concatenate_videoclips)
+from moviepy.editor import (
+    ImageClip,
+    TextClip,
+    ColorClip,
+    CompositeVideoClip,
+    concatenate_videoclips,
+    AudioFileClip,
+)
 from moviepy.video.fx.all import fadein, fadeout
 from azure.core.exceptions import ResourceExistsError, AzureError
 from azure.storage.blob import BlobServiceClient
@@ -30,8 +37,8 @@ os.environ["MAGICK_FONT"] = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.tt
 def getVideoImages(jsonData):
     imageUrls = []
     for item in jsonData:
-        #print(item)
-        imageUrls.append(queryImages.FindImages(item.get("QueryImage")))
+        print(item)
+        imageUrls.append(videoImages.FindImages(item.get("QueryImage")))
     return imageUrls
 
 
@@ -42,18 +49,9 @@ def download_image(url, filename):
         f.write(response.content)
 
 
-# Function to download the file from the URL
-# def download_file(url, local_filename):
-#    with requests.get(url, stream=True) as r:
-#        r.raise_for_status()
-#        with open(local_filename, "wb") as f:
-#            for chunk in r.iter_content(chunk_size=8192):
-#                f.write(chunk)
-#    return local_filename
-
-
-def create_video(json_data, scene_images):
+def create_video(json_data, scene_images,audio_file):
     clips = []
+
     for scene, image_url in zip(json_data, scene_images):
         duration = scene["Duration"]
         description = scene["Description"]
@@ -73,8 +71,8 @@ def create_video(json_data, scene_images):
         # Criar clipe de imagem
         img_clip = ImageClip(image_filename).set_duration(duration)
 
-        #print(f"Listing Fonts {TextClip.list('font')}")
-        
+        # print(f"Listing Fonts {TextClip.list('font')}")
+
         # Criar clipe de texto
         txt_clip = TextClip(
             description, font='DejaVu-Sans', fontsize=24, color="white", bg_color="black", size=(None, None)
@@ -104,27 +102,43 @@ def create_video(json_data, scene_images):
 
     # Concatenar todos os clipes em um único clipe final
     final_clip = concatenate_videoclips(clips, method="compose")
-    temporary_file_name = f"video_{uuid.uuid4().hex}.mp4"
 
-    final_clip.write_videofile(temporary_file_name, fps=24, codec="libx264")
-    return temporary_file_name
+    if audio_file:
+        audio_clip = AudioFileClip(audio_file)
+        # Ajustar a duração do vídeo para coincidir com o áudio
+        audio_duration = audio_clip.duration
+        final_clip = final_clip.subclip(0, min(audio_duration, final_clip.duration))
+        # Ajustar a duração do áudio para coincidir com a duração do vídeo
+        audio_clip = audio_clip.subclip(0, final_clip.duration)
+        # Adicionar a narração ao vídeo
+        final_clip = final_clip.set_audio(audio_clip)
 
+    temp_video_name = f"video_{uuid.uuid4().hex}.mp4"
+
+    final_clip.write_videofile(temp_video_name, fps=24, codec="libx264")
+    return temp_video_name
+
+
+def Dispose(videoFile):
+    os.remove(videoFile)
 
 # Function to upload the file to Azure Blob Storage
 def upload_to_blob(local_filename):
 
     blob_name = local_filename
     blob_service_client = BlobServiceClient.from_connection_string(blob_storage_connection_string)
-    blob_client = blob_service_client.get_blob_client(container="video-ai", blob=blob_name)
 
     try:
+        blob_client = blob_service_client.get_blob_client(container="video-ai", blob=blob_name)
+
         with open(local_filename, "rb") as data:
             blob_client.upload_blob(data)
+        return blob_client.url
     except ResourceExistsError:
-        print(f"Error: The blob '{blob_client.blob_name}' already exists.")
+        return f"Error: The blob '{blob_client.blob_name}' already exists."
     except FileNotFoundError:
-        print(f"Error: The file '{local_filename}' was not found.")
+        return f"Error: The file '{local_filename}' was not found."
     except AzureError as e:
-        print(f"An error occurred with Azure: {e}")
+        return f"An error occurred with Azure: {e}"
     except Exception as e:
-        print(f"An unexpected error occurred: {e}")
+        return f"An unexpected error occurred: {e}"

@@ -1,5 +1,7 @@
 .env
 /videos
 *.mp4
+*.jpg
+*.mp3
 /.ipynb_checkpoints
 /__pycache__

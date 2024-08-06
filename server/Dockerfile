@@ -6,7 +6,7 @@ FROM dpokidov/imagemagick:latest
 # Install ImageMagick
 RUN apt-get update && \
     apt-get install -y wget ffmpeg fuse python3 python3-pip  && \
-    apt-get install -y wget ffmpeg fuse python3 python3-pip fonts-courier-prime fonts-dejavu fonts-dejavu-extra fonts-dejavu-core && \
+    apt-get install -y wget ffmpeg fuse python3 python3-pip fonts-courier-prime fonts-dejavu fonts-dejavu-extra fonts-dejavu-core dnsutils iputils-ping curl && \
     rm -rf /var/lib/apt/lists/*
 
 
@@ -17,7 +17,7 @@ WORKDIR /app
 COPY requirements.txt /app/
 
 # Install the Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt && pip install --upgrade urllib3
 
 # Copy the rest of the application code to /app
 COPY . /app
