@@ -7,6 +7,7 @@ from moviepy.editor import (
     CompositeVideoClip,
     concatenate_videoclips,
     AudioFileClip,
+    CompositeAudioClip
 )
 from moviepy.video.fx.all import fadein, fadeout
 from IPython.display import Video, display
@@ -16,7 +17,6 @@ def download_image(url, filename):
     response = requests.get(url)
     with open(filename, 'wb') as f:
         f.write(response.content)
-
 
 # Função para gerar narração usando Eleven Labs
 def generate_narration(text, voice_id="Xb7hH8MSUJpSbSDYk0k2"):
@@ -37,10 +37,9 @@ def generate_narration(text, voice_id="Xb7hH8MSUJpSbSDYk0k2"):
         return False
     return True
 
-
 # Imagens de cena
 scene_images = [
-    "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MzkwNzZ8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB0ZWNobm9sb2d5JTIwb2ZmaWNlfGVufDB8fHx8MTcyMjU5Njk3MHww&ixlib=rb-4.0.3&q=80&w=1080",
+    "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MzkwNzZ8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB0ZWNob2d5JTIwb2ZmaWNlfGVufDB8fHx8MTcyMjU5Njk3MHww&ixlib=rb-4.0.3&q=80&w=1080",
     "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MzkwNzZ8MHwxfHNlYXJjaHwxfHxvZmZpY2UlMjBlbXBsb3llZXMlMjB3b3JraW5nJTIwdG9nZXRoZXJ8ZW58MHx8fHwxNzIyNTk2OTcwfDA&ixlib=rb-4.0.3&q=80&w=1080",
     "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MzkwNzZ8MHwxfHNlYXJjaHwxfHx0ZWNob2xvZ3klMjBjb25zdWx0YW50cyUyMG1lZXRpbmd8ZW58MHx8fHwxNzIyNTk2OTcxfDA&ixlib=rb-4.0.3&q=80&w=1080",
     "https://images.unsplash.com/photo-1680745840784-318be3708374?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w2MzkwNzZ8MHwxfHNlYXJjaHwxfHxkaXZlcnNlJTIwaW5kdXN0cnklMjB2aXN1YWxzfGVufDB8fHx8MTcyMjU5NjgwNnww&ixlib=rb-4.0.3&q=80&w=1080",
@@ -113,20 +112,28 @@ def create_video(json_data, scene_images, output_path="video.mp4"):
     full_narration_text = " ".join(narration_texts)
     if generate_narration(full_narration_text):
         if os.path.exists("narration.mp3"):
-            audio_clip = AudioFileClip("narration.mp3")
-            # Ajustar a duração do vídeo para coincidir com o áudio
-            audio_duration = audio_clip.duration
-            final_clip = final_clip.subclip(0, min(audio_duration, final_clip.duration))
-            # Ajustar a duração do áudio para coincidir com a duração do vídeo
-            audio_clip = audio_clip.subclip(0, final_clip.duration)
-            # Adicionar a narração ao vídeo
-            final_clip = final_clip.set_audio(audio_clip)
+            narration_audio = AudioFileClip("narration.mp3").volumex(2.0)  # Aumentar o volume da narração
+            audio_clip = narration_audio
         else:
             print(
                 "Arquivo de áudio não encontrado. Verifique se a narração foi gerada corretamente."
             )
+            audio_clip = None
     else:
         print("Não foi possível gerar a narração.")
+        audio_clip = None
+
+    # Adicionar música de fundo ao vídeo
+    background_music_filename = "Mr Smith - Cool Running.mp3"  # Certifique-se de que este arquivo esteja no mesmo diretório
+    if os.path.exists(background_music_filename):
+        background_music = AudioFileClip(background_music_filename).volumex(0.25)  # Reduzir o volume da música de fundo
+        if audio_clip:
+            final_audio = CompositeAudioClip([audio_clip, background_music.set_duration(final_clip.duration)])
+        else:
+            final_audio = background_music.set_duration(final_clip.duration)
+        final_clip = final_clip.set_audio(final_audio)
+    else:
+        print("Arquivo de música de fundo não encontrado. Verifique se o download foi feito corretamente.")
 
     final_clip.write_videofile(output_path, fps=24)
 
