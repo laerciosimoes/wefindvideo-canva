@@ -1,6 +1,8 @@
 import videoFile
 import voiceVideo
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel
 import videoScript
 import videoMusic
@@ -18,6 +20,13 @@ app = FastAPI(
     description="WeFindVideo API",
 )
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins (you can restrict to specific origins)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all methods, including POST, GET, OPTIONS, etc.
+    allow_headers=["*"],  # Allow all headers
+)
 
 # 5. Adding generate-video route
 @app.post("/generate-video/")
