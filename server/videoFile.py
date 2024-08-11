@@ -8,6 +8,7 @@ from moviepy.editor import (
     TextClip,
     ColorClip,
     CompositeVideoClip,
+    CompositeAudioClip,
     concatenate_videoclips,
     AudioFileClip,
 )
@@ -49,7 +50,7 @@ def download_image(url, filename):
         f.write(response.content)
 
 
-def create_video(json_data, scene_images,audio_file):
+def create_video(json_data, scene_images,audio_file, music_file):
     clips = []
 
     for scene, image_url in zip(json_data, scene_images):
@@ -75,12 +76,18 @@ def create_video(json_data, scene_images,audio_file):
 
         # Criar clipe de texto
         txt_clip = TextClip(
-            description, font='DejaVu-Sans', fontsize=24, color="white", bg_color="black", size=(None, None)
+            description, 
+            font='DejaVu-Sans', 
+            fontsize=24, 
+            color="white", 
+            bg_color="black", 
+            size=(img_clip.size[0] - 40, None)
         )
         txt_clip = txt_clip.set_duration(duration).set_position(("center", "bottom"))
 
-        # Ajustar o tamanho do fundo com base no texto
+        # Calculate the size of the text
         text_size = txt_clip.size
+        
         background_clip = (
             ColorClip(size=(text_size[0] + 20, text_size[1] + 10), color=(0, 0, 0))
             .set_duration(duration)
@@ -112,6 +119,19 @@ def create_video(json_data, scene_images,audio_file):
         audio_clip = audio_clip.subclip(0, final_clip.duration)
         # Adicionar a narração ao vídeo
         final_clip = final_clip.set_audio(audio_clip)
+
+    print(f"Music File: {music_file}")
+
+    # Adicionar música de fundo ao vídeo
+    if music_file:
+        background_music = AudioFileClip(music_file).volumex(0.25)  # Reduzir o volume da música de fundo
+        if audio_clip:
+            final_audio = CompositeAudioClip(
+                [audio_clip, background_music.set_duration(final_clip.duration)]
+            )
+        else:
+            final_audio = background_music.set_duration(final_clip.duration)
+        final_clip = final_clip.set_audio(final_audio)
 
     temp_video_name = f"video_{uuid.uuid4().hex}.mp4"
 
