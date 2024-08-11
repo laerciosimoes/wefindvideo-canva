@@ -3,6 +3,7 @@ import voiceVideo
 from fastapi import FastAPI
 from pydantic import BaseModel
 import videoScript
+import videoMusic
 
 
 class VideoRequest(BaseModel):
@@ -25,7 +26,8 @@ def generate_video(request: VideoRequest):
         json_data = videoScript.get_json_data(request.videoType, request.prompt)
         imageUrls = videoFile.getVideoImages(json_data)
         tmp_AudioFile = voiceVideo.create_audio(json_data)
-        tmp_VideoFile = videoFile.create_video(json_data, imageUrls, tmp_AudioFile)
+        musicFile = videoMusic.getMusic(json_data)
+        tmp_VideoFile = videoFile.create_video(json_data, imageUrls, tmp_AudioFile, musicFile)
         videoUrl = videoFile.upload_to_blob(tmp_VideoFile)
         voiceVideo.Dispose(tmp_AudioFile)
         videoFile.Dispose(tmp_VideoFile)
